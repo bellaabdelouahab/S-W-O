@@ -79,7 +79,7 @@ app.get('/', (_req: Request, res: Response) => {
 
 // routes
 app.use(
-    `/api`,
+    "/api",
     routesVersioning()({
         '1.0.0': indexRouter,
     })

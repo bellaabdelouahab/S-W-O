@@ -26,7 +26,7 @@ mongoose
     .then(() => {
         logger.info('DB Connected Successfully!');
         expServer = startServer();
-        logger.info(`Swagger Will Be Available at /docs  /docs-json`);
+        logger.info("Swagger Will Be Available at /docs  /docs-json");
     })
     .catch((err: Error) => {
         logger.error(

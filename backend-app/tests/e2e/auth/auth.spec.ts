@@ -269,7 +269,7 @@ describe('Auth API', () => {
             res = await agent
                 .get('/api/auth/refreshToken')
                 .set('Cookie', `access_token=${accessToken}`)
-                .set('Cookie', `refresh_token=invalidtoken; HttpOnly`);
+                .set('Cookie', "refresh_token=invalidtoken; HttpOnly");
 
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
