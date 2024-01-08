@@ -8,7 +8,7 @@ import createRoles from './utils/authorization/roles/create_roles';
 process.on('uncaughtException', (err) => {
     logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
     logger.error(`${err}, ${err.message}, ${err.stack}`);
-    process.exit(1);
+    throw err;
 });
 
 import app from './app';
@@ -26,6 +26,7 @@ mongoose
     .then(() => {
         logger.info('DB Connected Successfully!');
         expServer = startServer();
+
         logger.info(`Swagger Will Be Available at /docs  /docs-json`);
     })
     .catch((err: Error) => {
@@ -56,7 +57,7 @@ process.on('unhandledRejection', (err: Error) => {
     logger.error(`${err.name}, ${err.message}, ${err.stack}`);
     expServer.then((server) => {
         server.close(() => {
-            process.exit(1);
+            server.unref();
         });
     });
 });
@@ -66,7 +67,7 @@ process.on('SIGTERM', () => {
     logger.info('SIGINT RECEIVED. Shutting down gracefully');
     mongoose.connection.close(false).then(() => {
         logger.info('💥 Process terminated!');
-        process.exit(0);
+        throw new Error('SIGTERM');
     });
 });
 
@@ -74,6 +75,6 @@ process.on('SIGINT', () => {
     logger.info('SIGINT RECEIVED. Shutting down gracefully');
     mongoose.connection.close(false).then(() => {
         logger.info('💥 Process terminated!');
-        process.exit(0);
+        throw new Error('SIGINT');
     });
 });
