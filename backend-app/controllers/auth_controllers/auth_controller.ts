@@ -77,8 +77,10 @@ export const githubHandler = async (
         AuthUtils.setAccessTokenCookie(res, accessToken);
         AuthUtils.setRefreshTokenCookie(res, refreshToken);
         res.status(201).json(createdUser);
+        return null;
     } catch (err) {
         next(err);
+        return null;
     }
 };
 
