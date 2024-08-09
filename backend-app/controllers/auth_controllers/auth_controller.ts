@@ -105,8 +105,8 @@ export class AuthController extends Controller {
     @Response(
         400,
         `- Please provide email and password
-        \n- Invalid email or password
-        \n- You haven't set a password yet. Please login with GitHub and set a password from your profile page.`
+    \n- Invalid email or password
+    \n- You haven't set a password yet. Please login with GitHub and set a password from your profile page.`
     )
     @Response(401, 'Invalid email or password')
     @Response(
@@ -119,45 +119,45 @@ export class AuthController extends Controller {
         @Res() res: TsoaResponse<200, { accessToken: string; user: any }>,
         @Body() body?: { email?: string; password?: string }
     ): Promise<void> {
-        const { email, password } = body;
+        const { email, password } = body || {};
 
-        // 1) check if password exist
-        if (!password || !email) {
+        if (!email || !password) {
             throw new AppError(400, 'Please provide email and password');
         }
-        // 2) check if user exist and password is correct
-        const user = await User.findOne({
-            email,
-        }).select('+password');
+
+        const user = await User.findOne({ email }).select('+password');
 
         if (!user) {
             throw new AppError(400, 'Invalid email or password');
         }
 
-        // check if password exist and  it is a string
-        // TODO: add test for this
-        if (!user?.password)
+        if (!user.password) {
             throw new AppError(
                 400,
-                "You haven't set a password yet. Please login with github and set a password from your profile page."
+                "You haven't set a password yet. Please login with GitHub and set a password from your profile page."
             );
+        }
 
-        if (!(await user.correctPassword(password, user.password))) {
+        const isPasswordCorrect = await user.correctPassword(
+            password,
+            user.password
+        );
+        if (!isPasswordCorrect) {
             throw new AppError(401, 'Invalid email or password');
         }
 
-        // Check if the account is banned
-        if (user && user?.accessRestricted)
+        if (user.accessRestricted) {
             throw new AppError(
                 403,
                 'Your account has been banned. Please contact the admin for more information.'
             );
+        }
 
-        // 3) All correct, send accessToken & refreshToken to client via cookie
-        const accessToken = AuthUtils.generateAccessToken(user._id.toString());
-        const refreshToken = AuthUtils.generateRefreshToken(
-            user._id.toString()
-        );
+        const [accessToken, refreshToken] = await Promise.all([
+            AuthUtils.generateAccessToken(user._id.toString()),
+            AuthUtils.generateRefreshToken(user._id.toString()),
+        ]);
+
         AuthUtils.setAccessTokenCookie(this, accessToken);
         AuthUtils.setRefreshTokenCookie(this, refreshToken);
 
@@ -184,7 +184,11 @@ export class AuthController extends Controller {
         @Res() res: TsoaResponse<201, { accessToken: string; user: any }>,
         @Body() body?: { name?: string; email?: string; password?: string }
     ) {
-        const activationKey = await generateActivationKey();
+        if (!body.email || !body.password || !body.name)
+            throw new AppError(
+                400,
+                'Please provide all required fields(name, email, password)'
+            );
         const Roles = await Role.getRoles();
         // check if user role exists
         if (!Roles.USER)
@@ -194,9 +198,8 @@ export class AuthController extends Controller {
             );
 
         // check if password is provided
-        if (!body.password)
-            throw new AppError(400, 'Please provide a password');
 
+        const activationKey = await generateActivationKey();
         const userpayload = {
             name: body.name,
             email: body.email,
@@ -212,6 +215,7 @@ export class AuthController extends Controller {
         const refreshToken = AuthUtils.generateRefreshToken(
             user._id.toString()
         );
+        // the 'this' object is the express response object
         AuthUtils.setAccessTokenCookie(this, accessToken);
         AuthUtils.setRefreshTokenCookie(this, refreshToken);
         // Remove the password and activation key from the output

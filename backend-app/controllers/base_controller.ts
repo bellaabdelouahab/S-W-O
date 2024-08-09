@@ -1,4 +1,3 @@
-import { IUser } from '@root/interfaces/models/i_user';
 import { Model } from 'mongoose';
 import AppError from '@utils/app_error';
 import APIFeatures from '@utils/api_features';
@@ -56,15 +55,14 @@ export const updateOne = async (
 export const createOne = async (
     Model: Model<any>,
     body: any,
-    user: IUser
+    userid: string
 ): Promise<any> => {
     // get the user who is creating the document
-    if (user === undefined)
+    if (userid === undefined)
         throw new AppError(
             401,
             'You are not authorized to perform this action'
         );
-    const userid = user._id;
     body.createdBy = userid;
 
     const doc = await Model.create(body);

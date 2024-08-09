@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import Actions from '@constants/actions';
 import validator from 'validator';
-import { IRole } from '@interfaces/models/i_role';
+import { IRole } from '@root/interfaces/models/i_role';
 
 const roleSchema: Schema = new Schema<IRole>(
     {

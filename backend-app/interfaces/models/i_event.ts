@@ -1,9 +1,10 @@
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface IEvent extends Document {
     name: string;
     description?: string;
     location?: string;
+    calendar: mongoose.Schema.Types.ObjectId;
     startDate: Date;
     endDate: Date;
     startTime: string;

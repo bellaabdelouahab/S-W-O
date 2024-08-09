@@ -52,32 +52,26 @@ const errorHandler = (
     } else {
         message = (err as any).message;
     }
-    // tsting :
-    const stackTrace = (err as any).stack?.split('at ');
-    const stackTraceObject = stackTrace?.reduce(
-        (acc: any, line: string, index: number) => {
-            acc[index + 1] = line;
-            return acc;
-        },
-        {}
-    );
 
     // Construct the response object
     const response = {
         status: (err as any).statusCode,
         title: httpStatus.getStatusText((err as any).statusCode),
         details: {
-            ...((err as any).path && { path: (err as any).path.replace(/\/v\d+/, '') }),
-            "api-version": req.headers['api-version'],
-            ...(CURRENT_ENV === 'development' && {
-                error: {
-                    '0': 'Do not forget to remove this in production!',
-                    ...stackTraceObject,
-                },
+            ...((err as any).path && {
+                path: (err as any).path.replace(/\/v\d+/, ''),
             }),
+            'api-version': req.headers['api-version'],
+            ...(CURRENT_ENV === 'development' && {stack:(err as any).stack}),
         },
         message,
     };
+
+
+    if (CURRENT_ENV === 'development') {
+        console.error(err);
+    }
+
     // Send the response
     res.status((err as any).statusCode).json(response);
 };

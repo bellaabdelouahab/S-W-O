@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import metaData from '@constants/meta_data';
-import { IEvent } from '@interfaces/models/i_event';
+import { IEvent } from '@root/interfaces/models/i_event';
 
 const eventSchema: Schema = new Schema<IEvent>({
     name: {
@@ -9,6 +9,11 @@ const eventSchema: Schema = new Schema<IEvent>({
     },
     description: {
         type: String,
+    },
+    calendar: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Calendar',
+        required: [true, 'Please fill your event calendar'],
     },
     location: {
         type: String,

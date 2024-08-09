@@ -2,7 +2,6 @@ import globalErrHandler from './middlewares/global_error_handler';
 import AppError from './utils/app_error';
 import express, { Request, Response, NextFunction } from 'express';
 import limiter from './middlewares/rate_limit';
-import bearerToken from 'express-bearer-token';
 import compression from 'compression';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -67,23 +66,12 @@ if (CURRENT_ENV === 'production') {
 // if no version is specified, use the default version
 app.use(handleAPIVersion);
 
-// handle bearer token
-app.use(bearerToken());
-
 app.get('/', (_req: Request, res: Response) => {
     res.status(200).json({
         message: 'Welcome to the backend app',
         env: CURRENT_ENV,
     });
 });
-
-// routes
-// app.use(
-//     `/api`,
-//     routesVersioning()({
-//         '1.0.0': indexRouter,
-//     })
-// );
 
 // register routes
 RegisterRoutes(app);

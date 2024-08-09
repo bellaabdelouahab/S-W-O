@@ -31,7 +31,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'User validation failed: email: Please fill your email'
+                'Please provide all required fields(name, email, password)'
             );
         });
 
@@ -58,7 +58,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'Please provide a password'
+                'Please provide all required fields(name, email, password)'
             );
         });
 

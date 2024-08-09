@@ -10,6 +10,7 @@ import {
     Controller,
     Delete,
     Post,
+    Path,
     Route,
     Security,
     Tags,
@@ -18,12 +19,13 @@ import {
     Response,
 } from 'tsoa';
 
+
 interface InviteUsersByEmailRequestBody {
     emails: string[];
 }
 
 @Security('jwt')
-@Route('calendar/participants')
+@Route('api/calendar/{calendarId}/participants')
 @Tags('Calendar')
 export class CalendarParticipantsController extends Controller {
     @Post('invite')
@@ -36,6 +38,7 @@ export class CalendarParticipantsController extends Controller {
     @SuccessResponse(200, 'OK')
     public async inviteUsersByEmail(
         @Request() req: IReq,
+        @Path() calendarId: string,
         @Body() body: InviteUsersByEmailRequestBody,
         @Res()
         res: TsoaResponse<
@@ -44,7 +47,7 @@ export class CalendarParticipantsController extends Controller {
         >
     ) {
         // check if calendar exists
-        const calendar = await calendar_validators.validateCalendar(req);
+        const calendar = await calendar_validators.getCalendar(calendarId);
         // check if user is the calendar owner
         if (calendar.createdBy.toString() !== req.user._id.toString()) {
             // check if user is a participant and the calendar is shareable
@@ -83,10 +86,11 @@ export class CalendarParticipantsController extends Controller {
     @SuccessResponse(200, 'OK')
     public async removeCalendarParticipants(
         @Request() req: IReq,
+        @Path() calendarId: string,
         @Body() body: any,
         @Res() res: TsoaResponse<200, { calendar: any }>
     ) {
-        const calendar = await calendar_validators.validateCalendar(req);
+        const calendar = await calendar_validators.getCalendar(calendarId);
         // check if user is the calendar owner
         if (calendar.createdBy.toString() !== req.user._id.toString()) {
             throw new AppError(403, 'You are not the owner of this calendar');

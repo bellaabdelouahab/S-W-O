@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import Actions from '@constants/actions';
 import metaData from '@constants/meta_data';
 import { randomBytes, createHash } from 'crypto';
-import { IUser } from '@interfaces/models/i_user';
+import { IUser } from '@root/interfaces/models/i_user';
 
 const userSchema: Schema = new mongoose.Schema<IUser>(
     {

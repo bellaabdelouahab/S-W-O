@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface ICalendar extends Document {
-    Name: string;
-    Type: string;
+    name: string;
+    type: string;
     isPublic: boolean;
     isShareAble: boolean;
     participants: mongoose.Schema.Types.ObjectId[];
@@ -17,4 +17,5 @@ export interface ICalendar extends Document {
     deletedAt?: Date;
     createdBy?: string;
     updatedBy?: string;
+
 }

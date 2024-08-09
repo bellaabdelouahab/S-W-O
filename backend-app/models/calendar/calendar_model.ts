@@ -1,14 +1,14 @@
 import mongoose, { Schema } from 'mongoose';
 import metaData from '@constants/meta_data';
-import { ICalendar } from '@interfaces/models/i_calendar';
+import { ICalendar } from '@root/interfaces/models/i_calendar';
 
 const calendarSchema: Schema = new Schema<ICalendar>(
     {
-        Name: {
+        name: {
             type: String,
             required: [true, 'Please fill your calendar name'],
         },
-        Type: {
+        type: {
             type: String,
             required: [true, 'Please fill your calendar type'],
             validate: {

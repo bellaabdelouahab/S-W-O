@@ -2,7 +2,6 @@ import { IReq } from '@interfaces/vendors';
 import USER from '@models/user/user_model';
 import Role from '@utils/authorization/roles/role';
 import AppError from '@utils/app_error';
-import validateActions from '@utils/authorization/validate_actions';
 import {
     Body,
     Controller,
@@ -31,7 +30,7 @@ interface RoleType {
     authorities: string[];
     restrictions: string[];
 }
-@Security('jwt')
+@Security('jwt', ['ADMIN', 'SUPER_ADMIN'])
 @Route('admin')
 @Tags('Admin')
 export class AdminController extends Controller {
@@ -58,16 +57,6 @@ export class AdminController extends Controller {
         body: Omit<RoleType, 'name'>
     ) {
         const { authorities, restrictions } = body;
-        if (!validateActions(authorities))
-            throw new AppError(
-                400,
-                'One or many actions are invalid in the authorities array'
-            );
-        if (!validateActions(restrictions))
-            throw new AppError(
-                400,
-                'One or many actions are invalid in the restrictions array'
-            );
         if (req.user._id?.toString() === userId?.toString())
             throw new AppError(
                 400,

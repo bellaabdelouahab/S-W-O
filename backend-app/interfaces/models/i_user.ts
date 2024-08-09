@@ -30,3 +30,15 @@ export interface IUser extends Document {
     isRestrictedFrom(action: string[]): boolean;
     generateResetKey(): string;
 }
+
+
+export interface IUserRequest {
+    _id: ObjectId;
+    name?: string;
+    email: string;
+    roles?: string[];
+    authorities?: string[];
+    restrictions?: string[];
+    active: boolean;
+    githubOauthAccessToken?: string;
+}
